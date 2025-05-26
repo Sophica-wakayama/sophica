@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学習塾6月予定表</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .schedule-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="30" r="1.5" fill="white" opacity="0.1"/><circle cx="40" cy="70" r="1" fill="white" opacity="0.1"/></svg>');
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header .subtitle {
+            margin: 8px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .calendar {
+            padding: 0;
+        }
+        
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .day-header {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            border-right: 1px solid #dee2e6;
+        }
+        
+        .day-header:last-child {
+            border-right: none;
+        }
+        
+        .day-header.sunday {
+            color: #dc3545;
+        }
+        
+        .day-header.saturday {
+            color: #007bff;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        
+        .day {
+            min-height: 60px;
+            border-right: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            padding: 8px 4px;
+            position: relative;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .day:last-child {
+            border-right: none;
+        }
+        
+        .day:hover {
+            background: #f8f9fa;
+            transform: scale(1.02);
+        }
+        
+        .day-number {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .day.closed {
+            background: #dee2e6;
+            color: #495057;
+        }
+        
+        .day.closed .day-number {
+            color: #495057;
+        }
+        
+        .day.sunday .day-number {
+            color: #dc3545;
+        }
+        
+        .day.saturday .day-number {
+            color: #007bff;
+        }
+        
+        .event {
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            margin: 1px 0;
+            line-height: 1.2;
+            font-weight: 500;
+        }
+        
+        .event.game {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .event.test {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .event.closed {
+            background: #ced4da;
+            color: #343a40;
+            border: 1px solid #adb5bd;
+        }
+        
+        .legend {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .legend h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+        }
+        
+        .legend-color.game {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+        
+        .legend-color.test {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .legend-color.closed {
+            background: #ced4da;
+            border-color: #adb5bd;
+        }
+        
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .contact-info {
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .schedule-container {
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .day {
+                min-height: 50px;
+                padding: 6px 3px;
+            }
+            
+            .event {
+                font-size: 9px;
+                padding: 1px 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="schedule-container">
+        <div class="header">
+            <h1>📚 6月の予定</h1>
+            <p class="subtitle">学習塾Sophica</p>
+        </div>
+        
+        <div class="calendar">
+            <div class="calendar-header">
+                <div class="day-header sunday">日</div>
+                <div class="day-header">月</div>
+                <div class="day-header">火</div>
+                <div class="day-header">水</div>
+                <div class="day-header">木</div>
+                <div class="day-header">金</div>
+                <div class="day-header saturday">土</div>
+            </div>
+            
+            <div class="calendar-grid">
+                <!-- Week 1 -->
+                <div class="day sunday closed">
+                    <div class="day-number">1</div>
+                    <div class="event closed">休校日</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">2</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">3</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">4</div>
+                </div>
+                <div class="day closed">
+                    <div class="day-number">5</div>
+                    <div class="event closed">休校日</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">6</div>
+                </div>
+                <div class="day saturday">
+                    <div class="day-number">7</div>
+                </div>
+                
+                <!-- Week 2 -->
+                <div class="day sunday closed">
+                    <div class="day-number">8</div>
+                    <div class="event closed">休校日</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">9</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">10</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">11</div>
+                </div>
+                <div class="day closed">
+                    <div class="day-number">12</div>
+                    <div class="event closed">休校日</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">13</div>
+                </div>
+                <div class="day saturday">
+                    <div class="day-number">14</div>
+                </div>
+                
+                <!-- Week 3 -->
+                <div class="day sunday closed">
+                    <div class="day-number">15</div>
+                    <div class="event game">🎲 10:00-13:00</div>
+                    <div class="event game">🀄 14:00-16:00</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">16</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">17</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">18</div>
+                </div>
+                <div class="day closed">
+                    <div class="day-number">19</div>
+                    <div class="event closed">休校日</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">20</div>
+                </div>
+                <div class="day saturday">
+                    <div class="day-number">21</div>
+                </div>
+                
+                <!-- Week 4 -->
+                <div class="day sunday closed">
+                    <div class="day-number">22</div>
+                    <div class="event test">📝 期末対策</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">23</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">24</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">25</div>
+                </div>
+                <div class="day closed">
+                    <div class="day-number">26</div>
+                    <div class="event test">📝 期末対策</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">27</div>
+                </div>
+                <div class="day saturday">
+                    <div class="day-number">28</div>
+                </div>
+                
+                <!-- Week 5 -->
+                <div class="day sunday closed">
+                    <div class="day-number">29</div>
+                    <div class="event closed">休校日</div>
+                </div>
+                <div class="day">
+                    <div class="day-number">30</div>
+                </div>
+                <div class="day" style="border: none; background: #fafafa;"></div>
+                <div class="day" style="border: none; background: #fafafa;"></div>
+                <div class="day" style="border: none; background: #fafafa;"></div>
+                <div class="day" style="border: none; background: #fafafa;"></div>
+                <div class="day" style="border: none; background: #fafafa;"></div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <h3>📋 イベント案内</h3>
+            <div class="legend-item">
+                <div class="legend-color game"></div>
+                <span><strong>6/15(日)</strong> ボードゲーム会・麻雀会</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color test"></div>
+                <span><strong>6/22・26</strong> 期末テスト対策講座</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color closed"></div>
+                <span><strong>毎週木・日</strong> 休校日</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
